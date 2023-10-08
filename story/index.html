@@ -1,0 +1,513 @@
+<body>
+<title>Burnout Simulator</title>
+<div class="container">
+<meta id="viewport" name="viewport" content="initial-scale=1, user-scalable=0, minimum-scale=1">
+<span id="endscreen"><span class="align-middle" id="endscreen-text"><span class="logo groovy">Burnout Simulator</span><br><span class="subtitle">A short game for that "What's Your Story?" project</span><br><br><p id="how-to-play" class="button" onclick="startGame()">Play</p><p id="how-to-play" class="button" onclick="howToPlay()">How to Play</p><br><br><br><p id="how-to-play" class="button" onclick="manifesto()">Manifesto</p><br><br><br>This game was intended to be played on a computer. Probably won't work on your phone.<br><br>By Brooke Gill. <a href="https://brookie.dev/" target="_blank">See what other cool stuff I've made!</a></span></span>
+ <p id="border" class="item" style="overflow: auto; max-height: 100vh; width: 325px;"></p>
+ <div class="vertgroup">
+    <p id="topbar"><span id="day">day 4</span><br><span id="clock">‒:‒‒ AM</sub></span></p>
+    <p class="stats"><img class="icon icon-1" src="/images/sparkling_heart_color.svg"> &nbsp; <span id="stat-happiness">80</span> &nbsp; <img class="icon icon-2" src="/images/open_book_color.svg"> &nbsp; <span id="stat-grades">80</span> &nbsp; <img class="icon icon-3" src="/images/brain_color.svg"> &nbsp; <span id="stat-sanity">80</span></p>
+    <p class="diary" id="diary">Dear Diary,<br>Today, I did the following activities:<br><span id="listofactivities"></span><br><span id="todaystotal"></span></p>
+    <p id="sleep-button" class="button" onclick="endDay()">Sleep</p>
+ </div>
+</div>
+</body>
+<audio id="note-0" src="sounds/note_0.mp3"></audio>
+<audio id="note-1" src="sounds/note_1.mp3"></audio>
+<audio id="note-2" src="sounds/note_2.mp3"></audio>
+<audio id="note-3" src="sounds/note_3.mp3"></audio>
+<audio id="note-4" src="sounds/note_4.mp3"></audio>
+<audio id="note-5" src="sounds/note_5.mp3"></audio>
+<audio id="note-6" src="sounds/note_6.mp3"></audio>
+<audio id="note-7" src="sounds/note_7.mp3"></audio>
+<audio id="note-8" src="sounds/note_8.mp3"></audio>
+<audio id="note-wrong-0" src="sounds/note_wrong_0.mp3"></audio>
+<audio id="note-wrong-1" src="sounds/note_wrong_1.mp3"></audio>
+<audio id="note-wrong-2" src="sounds/note_wrong_2.mp3"></audio>
+<script>
+// Happiness, Grades, Sanity?
+const assignmentNames = [[["Paradoxical", "Quixotic", "Fractal", "Quantum", "Ludicrous", "Multiplicative", "Sinusoidal", "Exponential", "Algebraic", "Hyperbolic", "Zany", "Tangential", "Nebulous", "Geometric", "Infinitesimal", "Recursive", "Imaginary", "Polynomial", "Matrix-like", "Spherical", "Proofs of", "Pythagorean", "Eratosthenes'"],[ "Conundrums", "Set Theory", "Gridlock", "Anomalies", "Universe", "Chaos", "Parabolas", "Dimensions", "Equilibrium", "Asymptotes", "Cubics", "Planets", "Wormholes", "Numerals", "Variables", "Black Holes", "Tetrahedra", "Algorithms", "Quotients", "Coordinates", "Quadrics", "Proofs", "Parity", "Permutations", "Derivatives", "Inequalities"]],[["Hypothetical","Quantum","Radioactive","Mutagenic","Microscopic","Galactic","Interstellar","Holographic","Temporal","Volatile","Aerodynamic","Photosynthetic","Hydrodynamic","Thermodynamic","Crystallographic","Osmotic","Spectral","Subatomic","Synthetic","Isotropic"], ["Teleportation","Unicorn","Blackhole","Space-Time Contortion","Atomic Fission","Gene Expression","Exploration","Photon Blast","Plasma Ball","Light Speed","Neutrino Mystery","Lab Report","Write-up","Summary","Pre-lab","Xenobiology","Quantum Entanglement","Nuclear Reaction","Climate Change","Gravity Anomaly","Robotics","Hyperloop","Monopole Search","Warp Drive","Practice Exam", "At-home Lab"]],[["Symbolic","Allegorical","Classic","Rhetorical","Shakespearean","Eccentric","Mysterious","Mythical","Fantastical","Romantic","Gothic","Victorian","Dystopian","Satirical","Poetic","Tragic","Heroic","Epic","Lyric","Postmodern"],["Sonnet","Mock-Haiku","Speech Analysis","Epic Poem","Character Study","Metaphysical Essay","Pseudonym Exploration","Ghost Story","Literary Review","Genre Parody","Linguistic Puzzle","Fairy Tale Rewrite","Textual Analysis","Narrative Plot","Metaphor Mix-Up","Prose Poetry","Alliteration Adventure","Acrostic","Reading","Short Story","Limerick","Palindrome","Analysis","Recital","500-word Essay"]],[["Detailed","Comparative","Revolutionary","Controversial","In-depth","Focused","Analytic","General","Abstract","Comprehensive","Interdisciplinary","Historiographical","Thematic","Era-based","Critical","Exploratory","Empirical","Descriptive","Theoretical","Quantitative"],["Report","Analysis","Essay","Presentation","Dissertation","Study","Critique","Review","Summary","Exposition","Outline","Reflection","Bibliography","Commentary","Profile","Introduction","Examination","Assessment","Investigation","Annotation"]]]
+
+const classNames = ["Math", "Science", "English"];
+
+var activityNames = [["Take out Trash",-1,0,3],["Feed Rabbit",3,-1,1],["Buy Groceries",2,-1,0],["Go to Tutoring",-3,4,1],["Meditate",1,-1,3],["Volunteer Tutoring",1,2,-1],["Tech Support",3,1,-3],["Play Video Games",4,-1,0],["Walk Outside",3,-2,2],["Buy Fast Food",2,0,0],["Cry",-4,-2,6],["Buy Boba Tea",2,0,1],["Go Window Shopping",4,-2,0],["Practice Web Development",1,2,-1],["Spend Time with Friends",4,1,-3],["Code",1,1,-1],["Lie in Bed",2,-2,2],["Doomscroll",-4,-4,-5],["Play Ukulele",2,-1,1],["Study, Study, Study",-4,8,-5],["Study",-3,4,-3],["Listen to Really Loud Music",4,-1,-2],["Argue Online",-4,1,-1],["Bike Around",2,-1,1],["Practice Driving",-2,2,-2],["Try On New Clothes",3,-2,2],["Clutch Pillow",2,-1,2],["Read Wikipedia",0,2,1],["Surf the Web™",3,1,-1],["Read the News",-3,3,-2],["Breathe",1,-1,3],["Yoga Practice",1,-2,3],["Reading",1,2,0],["Café Essay Writing",1,2,1],["Practice Drawing",-1,-1,1],["Gardening",1,-1,3],["Study Spanish",2,1,2],["Take a Nap",2,-1,5],["Eat Chocolate",6,-2,-2],["Make Hearty Trail Mix",4,-2,3],]
+
+var moods = [["joyful", "Completing activities rewards <b>+1 Happiness</b>."], ["lazy", "Can only complete a maximum of <b>8 activities and assignments</b>."], ["tired", "Negative sleep debuffs occur <b>1 hour earlier</b>."], ["enraged", "Time moves <b>20% faster</b>."], ["confused", "Completing assignments gives <b>1 less Sanity</b> than normal."]]
+var currentMood = -1;
+
+var unusedActivities = [];
+
+//const keyTasks = ["Shower", "Eat Dinner", "Sleep"];
+
+const validKeys = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+
+var happiness = 80;
+var sanity = 80;
+var grades = 80;
+var isGameOver = false;
+var inTransition = false;
+
+var dayDifficulty = 1;
+var day = 1;
+var dayCountdown = (Math.max(0, (237 - 15 * day)) + 120);
+var previousSelectedAssignment = -1;
+var previousDayStats = [];
+var currentSelectedAssignment = -1;
+const colors = [240, 120, 0, 40];
+var activeAssignments = [];
+
+var timeSinceStart = 0;
+
+function convertTime(time) {
+    return Math.floor((time / 60 + 3) % 12 + 1) + ":" + String(Math.floor(time % 60)).padStart(2, '0') + (time < 1200 && time >= 480 ? " <span class='ampm'>A" : " <span class='ampm'>P") + "M</span>";
+}
+
+function gameOver(reason) {
+    isGameOver = true;
+    inTransition = true;
+    document.body.style.filter = "";
+    document.getElementById("endscreen").style.opacity = 1;
+    document.getElementById("endscreen").style.display = "";
+    document.getElementById("endscreen-text").innerHTML = `<span class="logo groovy">Game Over</span><br><span class="subtitle">` + (reason == 0 ? "You got too sad" : reason == 1 ? "You flunked out " : "You lost your marbles") + ` and <b><span class='groovy'>burned out</span></b>.<br>You survived my workload for ` + day + " days!" + (day > 6 ? " Not bad!" : "") +`</span><br><br><p id="play-game" class="button" onclick="location.reload()">Play Again</p><br><br><br><p id="how-to-play" class="button" onclick="manifesto()">Manifesto</p><br><br><br>By Brooke Gill. <a href="https://brookie.dev/" target="_blank">See what other cool stuff I've made!</a>`
+}
+
+function underSleep() {
+    if(!inTransition) {
+        severity = timeSinceStart - (currentMood == 2 ? 360 : 420);
+        if(severity > 0) {
+            sanity -= (1 + severity / 180)
+            if(!inTransition) document.body.style.filter = "blur(" + severity / 25 + "px)";
+            document.getElementById("sleep-button").innerHTML = "GO TO BED NOW"
+            updateStats();
+        }
+    }
+    setTimeout(underSleep, 500);
+}
+
+function updateClock() {
+    document.getElementById("clock").innerHTML = convertTime(timeSinceStart);
+}
+
+function updateStats() {
+    if(!inTransition) {
+        document.getElementById("stat-happiness").innerHTML = Math.ceil(happiness);
+        document.getElementById("stat-grades").innerHTML = Math.ceil(grades);
+        document.getElementById("stat-sanity").innerHTML = Math.ceil(sanity);
+        if(happiness < 0) gameOver(0);
+        if(grades < 0) gameOver(1);
+        if(sanity < 0) gameOver(2);
+    }
+}
+
+function passiveTime() {
+    timeSinceStart += 2.5;
+    updateClock();
+    setTimeout(passiveTime, (dayCountdown * (currentMood == 3 ? 1.25 : 1)));
+}
+
+
+function generateName(type) {
+    if(type != 3) return (assignmentNames[type][0][Math.floor(Math.random() * assignmentNames[type][0].length)] + " " + assignmentNames[type][1][Math.floor(Math.random() * assignmentNames[type][1].length)])
+    else {
+        selectedActivity = unusedActivities[Math.floor(Math.random() * unusedActivities.length)];
+        console.log(selectedActivity)
+        unusedActivities.splice(unusedActivities.indexOf(selectedActivity), 1);
+        return [activityNames[selectedActivity][0], activityNames[selectedActivity][1], activityNames[selectedActivity][2], activityNames[selectedActivity][3]];
+    }
+}
+
+function startGame() {
+    document.getElementById("endscreen").style.opacity = 0;
+    passiveTime();
+    underSleep();
+    startDay();
+    setTimeout(hideTheEndScreen, 200)
+}
+
+function startDay() {
+    document.getElementById("day").innerHTML = "day " + day + (day > 1 ? " &bullet; " + moods[currentMood][0] : "");
+    previousDayStats = [happiness, grades, sanity];
+    dayCountdown = (Math.max(0, (237 - 15 * day)) + 120);
+    timeSinceStart = 0;
+    todaystotal.innerHTML = "";
+    document.getElementById("endscreen").style.opacity = 0;
+    setTimeout(hideTheEndScreen, 200)
+    activeAssignments = [];
+    var elements = document.getElementsByClassName("assignment");
+    while (elements.length > 0) {
+        elements[0].parentNode.removeChild(elements[0]);
+    }
+    unusedActivities = [];
+    for(var y7 = 0; y7 < activityNames.length; y7++) {
+        unusedActivities.push(y7);
+    }
+
+    document.getElementById("listofactivities").innerHTML = "";
+    for(b = 0; b < 16 + dayDifficulty * 4; b++) {
+        if(Math.random() < 0.6) {
+        createAssignment(Math.floor(Math.random() * 3));
+        } else {
+            createActivity();
+        }  
+    } 
+    inTransition = false;
+}
+
+function hideTheEndScreen() {
+    document.getElementById("endscreen").style.display = "none";
+}
+
+function endDay() {
+    inTransition = true;
+    document.body.style.filter = "";
+    document.getElementById("endscreen").style.opacity = 1;
+    document.getElementById("endscreen").style.display = "";
+    document.getElementById("endscreen-text").innerHTML = `<span class="logo groovy">End of Day ` + day + `</span><br><span class="subtitle">Today's stats:<br><p class="stats"><img class="icon icon-1" src="/images/sparkling_heart_color.svg"> &nbsp; <span id="eod-happiness">80</span> &nbsp; <img class="icon icon-2" src="/images/open_book_color.svg"> &nbsp; <span id="eod-grades">80</span> &nbsp; <img class="icon icon-3" src="/images/brain_color.svg"> &nbsp; <span id="eod-sanity">80</span></span></p><br><br><p id="play-game" class="button" onclick="nextDay()">Next Day</p><br><br><p id="diary-copy" class="diary" style="font-size: 18px;"></p>`
+    document.getElementById("eod-happiness").innerHTML = Math.floor(happiness);
+    document.getElementById("eod-grades").innerHTML = Math.floor(grades);
+    document.getElementById("eod-sanity").innerHTML = Math.floor(sanity);
+    document.getElementById("diary-copy").innerHTML = document.getElementById("diary").innerHTML;
+}   
+
+function nextDay() {
+    currentMood = Math.floor(Math.random() * 5);
+    day += 1;
+    dayDifficulty += day * 0.03;
+    document.getElementById("endscreen-text").innerHTML = `<span class="logo groovy">Day ` + day + `</span><br><span class="subtitle">Today, Brooke's feeling <b>` + moods[currentMood][0] + `</b>.<br>` + moods[currentMood][1] + `<br><br><p id="play-game" class="button" onclick="startDay()">Start Day ` + day + `</p>`;
+}
+
+function generateKeys(numKeys) {
+    var keyList = [];
+    for(a = 0; a < numKeys; a++) {
+        keyList.push(validKeys[Math.floor(Math.random() * validKeys.length)]);
+    }
+    return keyList;
+}
+
+function playNote(noteNum) {
+    var audio = new Audio("sounds/note_" + noteNum + ".mp3");
+    audio.play();
+}
+
+document.addEventListener('keydown', function(event) {
+  var keyPressed = event.key;
+  console.log('Key Pressed: ' + keyPressed);
+  if (validKeys.indexOf(keyPressed.toUpperCase()) != -1) {
+    validKeyPress(keyPressed.toUpperCase());
+  }
+});
+
+function validKeyPress(key) {
+    if(currentSelectedAssignment != -1) {
+        var currentKeys = document.getElementById("keys-" + currentSelectedAssignment);
+        var keySequence = currentKeys.innerHTML;
+        var remainingKeys = Math.abs(((keySequence.length - 1) / 2) - activeAssignments[currentSelectedAssignment][2].length + 1);
+        console.log(remainingKeys);
+        if(key == keySequence.charAt(0)) {
+            console.log("Key pressed!")
+
+            timeSinceStart += 1 + (dayDifficulty / 3);
+            updateClock();
+            if(keySequence.length > 2) {
+                playNote(remainingKeys > 7 ? 7 : remainingKeys);
+                currentKeys.innerHTML = keySequence.substring(2);
+            } else {
+                playNote(8);
+                endAssignment(currentSelectedAssignment);
+            }
+        } else {
+            playNote("wrong_" + Math.floor(Math.random() * 3))
+            timeSinceStart += 5 * dayDifficulty;
+            happiness -= Math.random() * 0.5;
+            sanity -= Math.random() * 0.5;
+            updateStats();
+            currentKeys.innerHTML = activeAssignments[currentSelectedAssignment][2].join(" ")
+            selectAssignment(-1);
+        }
+    }
+}
+
+function endAssignment(endNum) {
+    happiness += activeAssignments[endNum][3][0];
+    grades += activeAssignments[endNum][3][1];
+    sanity += activeAssignments[endNum][3][2];
+    console.log([happiness, grades, sanity]);
+    listofactivities.innerHTML += "<b>" + activeAssignments[endNum][0] + "</b> &ndash; " + activeAssignments[endNum][3][0] + `<img class="tinyicon" src="/images/sparkling_heart_color.svg">, ` + activeAssignments[endNum][3][1] + `<img class="tinyicon" src="/images/open_book_color.svg">, ` + activeAssignments[endNum][3][2] + `<img class="tinyicon" src="/images/brain_color.svg">` +  "<br>"
+
+    todaystotal.innerHTML = "<b>Today's total</b>: " + Math.floor(happiness - previousDayStats[0]) + `<img class="tinyicon" src="/images/sparkling_heart_color.svg">, ` + Math.floor(grades - previousDayStats[0]) + `<img class="tinyicon" src="/images/open_book_color.svg">, ` + Math.floor(sanity - previousDayStats[2]) + `<img class="tinyicon" src="/images/brain_color.svg">`
+    updateStats();
+
+    var deletedAssignment = document.getElementById("assignment-" + endNum);
+    deletedAssignment.style.opacity = 0;
+    deletedAssignment.style.height = 0;
+    deletedAssignment.style.padding = 0;
+    deletedAssignment.style.transform = "rotate3d(0, 1, 0, 180deg)"
+    deletedAssignment.style.border = "none";
+    deletedAssignment.style.position = "relative";
+    deletedAssignment.style.zIndex = -999;
+    selectAssignment(-1);
+}
+
+function createActivity() {
+    activityInfo = generateName(3);
+    newAssignmentName = activityInfo[0];
+    newAssignmentType = 3;
+    newAssignmentId = activeAssignments.length;
+    newAssignmentHappiness = activityInfo[1] + (currentMood == 0 ? 1 : 0);
+    newAssignmentGrades = activityInfo[2];
+    newAssignmentSanity = activityInfo[3];
+
+    newAssignmentKeySequence = generateKeys(Math.floor(Math.random() / 2 + dayDifficulty + 4 + dayDifficulty * 0.75));
+    activeAssignments.push([newAssignmentName, newAssignmentType, newAssignmentKeySequence, [newAssignmentHappiness, newAssignmentGrades, newAssignmentSanity]]);
+    border.innerHTML += `<div class="assignment" onclick="selectAssignment(` + newAssignmentId + `)" id="assignment-` + newAssignmentId + `" style="background-color: hsl(` + (colors[newAssignmentType] + (Math.random() - 0.5) * 50) + `,` + (Math.random() * 30 + 60) + `%,` + (Math.random() * 20 + 80) + `%)">
+    <img src="/images/class_3.png">
+    <div class="assignment-text">
+      <p class="assignment-description">Activity</p>
+      <p class="assignment-title">` + newAssignmentName + `</p>
+      <p class="keys" id="keys-` + newAssignmentId + `">` + newAssignmentKeySequence.join(" ") + `</p>
+    </div>
+  </div>`
+}
+
+function selectAssignment(selectedAssignment) {
+    if(selectedAssignment != currentSelectedAssignment) {
+        previousSelectedAssignment = currentSelectedAssignment;
+        currentSelectedAssignment = selectedAssignment;
+        if(currentSelectedAssignment != -1) document.getElementById("assignment-" + currentSelectedAssignment).style.backgroundColor = "#29FF48";
+        if(currentSelectedAssignment != -1) document.getElementById("assignment-" + currentSelectedAssignment).classList.add("selected");
+        if(previousSelectedAssignment != -1) {
+            document.getElementById("assignment-" + previousSelectedAssignment).style.backgroundColor = `hsl(` + (colors[activeAssignments[previousSelectedAssignment][1]] + (Math.random() - 0.5) * 50) + `,` + (Math.random() * 30 + 60) + `%,` + (Math.random() * 20 + 80) + `%)`;
+            document.getElementById("assignment-" + previousSelectedAssignment).classList.remove("selected");
+        }
+    }
+}
+
+function createAssignment(type) { // 0 math, 1 science, 2 english
+    newAssignmentName = generateName(type);
+    newAssignmentType = type;
+    newAssignmentId = activeAssignments.length;
+    newAssignmentHappiness = Math.ceil(Math.random() * -3);
+    newAssignmentSanity = Math.ceil(Math.random() * -1) - (currentMood == 4 ? 1 : 0);
+    newAssignmentGrades = Math.floor(Math.random() * 5);
+    newAssignmentKeySequence = generateKeys(Math.floor(Math.random() / 2 + dayDifficulty + 4 + dayDifficulty * 0.75));
+    activeAssignments.push([newAssignmentName, newAssignmentType, newAssignmentKeySequence, [newAssignmentHappiness, newAssignmentGrades, newAssignmentSanity]]);
+    border.innerHTML += `<div class="assignment" onclick="selectAssignment(` + newAssignmentId + `)" id="assignment-` + newAssignmentId + `" style="background-color: hsl(` + (colors[type] + (Math.random() - 0.5) * 50) + `,` + (Math.random() * 30 + 60) + `%,` + (Math.random() * 20 + 80) + `%)">
+    <img src="/images/class_` + type + `.png">
+    <div class="assignment-text">
+      <p class="assignment-description">Assignment &bullet; ` + classNames[type] + `</p>
+      <p class="assignment-title">` + newAssignmentName + `</p>
+      <p class="keys" id="keys-` + newAssignmentId + `">` + newAssignmentKeySequence.join(" ") + `</p>
+    </div>
+  </div>`
+}
+</script>
+
+<style>
+.assignment {
+  display: flex;
+  align-items: center;
+  width: 300px;
+  height: 120px;
+  border: 1px solid black;
+  padding: 5px;
+  border-radius: 9px;
+  transition-duration: 0.3s;
+  cursor: pointer;
+}
+
+.assignment:hover {
+    transform: scaleZ(1.02) rotate3d(1, 1, 0, 15deg);
+    border: 3px solid white;
+}
+
+.selected .keys {
+    color: black;
+}
+
+.selected {
+    border: 3px solid white;
+}
+
+.assignment img {
+  max-height: 100%;
+  border-radius: 99px;
+  height: 50px;
+  margin-left: 5px;
+}
+
+#clock {
+    color: #97d4cc;
+    font-size: 80px;
+}
+
+.ampm {
+    font-size: 50px;
+    opacity: 0.8;
+}
+
+.keys {
+    color: rgba(0, 0, 0, 0.5);
+    font-size: 18px;
+    margin: 0;
+}
+
+.assignment-description {
+    color: rgba(0, 0, 0, 0.4);
+    font-variant-caps: small-caps;
+    margin: 0;
+    font-size: 16px;
+}
+
+.assignment-text {
+  margin-left: 20px;
+}
+
+.assignment-title {
+    margin: 0;
+    font-size: 24px;
+}
+
+body {
+    font-family: 'Garabito';
+    font-variant-numeric: tabular-nums;
+}
+
+.container {
+    display: flex;
+    /* to align items vertically in the center */
+    align-items: center;
+}
+
+.vertgroup {
+    /* to stack items vertically */
+    display: flex;
+    flex-direction: column;
+    margin-left: 10px; /* spacing between items. adjust as desired */
+}
+
+@font-face {
+    font-family: Garabito;
+    src: url(font/Gabarito-Regular.ttf);
+    font-weight: 400;
+}
+
+@font-face {
+    font-family: Garabito;
+    src: url(font/Gabarito-Bold.ttf);
+    font-weight: 700;
+}
+
+#day {
+    font-size: 20px;
+    color:rgba(255, 255, 255, 0.5)
+}
+
+.stats {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+}
+
+body {
+    background-color: #3b3b4b;
+    transition-duration: 0.2s;
+}
+
+.diary {
+    padding: 10px;
+    background-color: #FFFFFF99;
+}
+
+.icon {
+    height: 50px;
+    animation-name: wave;
+    animation-duration: 15s;
+    animation-iteration-count: infinite
+}
+
+.icon-1 {
+animation-delay: 0s;
+}
+
+.icon-2 {
+    animation-delay: 1s;
+}
+
+.icon-3 {
+    animation-delay: 2s;
+}
+
+.tinyicon {
+    height: 15px;
+}
+
+.button {
+    all: unset;
+    border: none;
+    text-align: center;
+    background-color: rgb(209, 156, 91);
+    color: #fff;
+    font-size: 18px;
+    margin: 20px;
+    padding: 10px 24px;
+    border-radius: 4px;
+    transition-duration: 0.2s;
+    cursor: pointer;
+    box-shadow: 4px 4px #8e5232;
+    rotate: 0deg;
+}
+
+.button:hover {
+    background-color: rgb(199, 82, 135);
+    box-shadow: 8px 8px #984f98;
+    rotate: -3deg;
+    color: #000;
+}
+
+#endscreen {
+    transition-duration: 0.2s;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgb(126, 59, 59);
+    z-index: 999;
+    vertical-align: middle;
+    display: flex;
+    align-items: center;
+    text-align: right;
+    justify-content: center;
+}
+
+.align-middle {
+    text-align: center;
+}
+
+.logo {
+    font-size: 80px;
+    font-weight: bold;
+}
+
+.groovy {
+  background: linear-gradient(150deg, #e51bbc 0%, #f5d254 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.subtitle {
+    font-size: 30px;
+}
+
+@keyframes wave {
+    0%, 100% {transform: translateY(0);}
+    25% {transform: translateY(-5px) rotate(3deg);}
+    50% {transform: translateY(0);}
+    75% {transform: translateY(5px) rotate(-3deg);}
+
+}
+</style>
