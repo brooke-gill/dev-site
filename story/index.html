@@ -30,20 +30,23 @@ const assignmentNames = [[["Paradoxical", "Quixotic", "Fractal", "Quantum", "Lud
 
 const classNames = ["Math", "Science", "English"];
 
-var activityNames = [["Take out Trash",-1,0,3],["Feed Rabbit",3,-1,1],["Buy Groceries",2,-1,0],["Go to Tutoring",-3,4,1],["Meditate",1,-1,3],["Volunteer Tutoring",1,2,-1],["Tech Support",3,1,-3],["Play Video Games",4,-1,0],["Walk Outside",3,-2,2],["Buy Fast Food",2,0,0],["Cry",-4,-2,6],["Buy Boba Tea",2,0,1],["Go Window Shopping",4,-2,0],["Practice Web Development",1,2,-1],["Spend Time with Friends",4,1,-3],["Code",1,1,-1],["Lie in Bed",2,-2,2],["Doomscroll",-4,-4,-5],["Play Ukulele",2,-1,1],["Study, Study, Study",-4,8,-5],["Study",-3,4,-3],["Listen to Really Loud Music",4,-1,-2],["Argue Online",-4,1,-1],["Bike Around",2,-1,1],["Practice Driving",-2,2,-2],["Try On New Clothes",3,-2,2],["Clutch Pillow",2,-1,2],["Read Wikipedia",0,2,1],["Surf the Web™",3,1,-1],["Read the News",-3,3,-2],["Breathe",1,-1,3],["Yoga Practice",1,-2,3],["Reading",1,2,0],["Café Essay Writing",1,2,1],["Practice Drawing",-1,-1,1],["Gardening",1,-1,3],["Study Spanish",2,1,2],["Take a Nap",2,-1,5],["Eat Chocolate",6,-2,-2],["Make Hearty Trail Mix",4,-2,3],]
+var activityNames = [["Take out Trash",1,0,3],["Feed Rabbit",3,-1,1],["Buy Groceries",2,0,0],["Go to Tutoring",-2,4,1],["Meditate",1,-1,3],["Volunteer Tutoring",1,2,-1],["Tech Support",3,1,-3],["Play Video Games",4,-1,0],["Walk Outside",3,-1,2],["Buy Fast Food",2,0,1],["Cry",-2,-2,6],["Buy Boba Tea",2,0,1],["Go Window Shopping",4,-2,0],["Practice Web Development",1,2,-1],["Spend Time with Friends",4,1,-1],["Code",1,1,-1],["Lie in Bed",2,-1,2],["Doomscroll",-4,-4,-5],["Play Ukulele",2,0,1],["Study, Study, Study",-4,8,-5],["Study",-2,4,-2],["Listen to Really Loud Music",3,0,-2],["Argue Online",-3,1,-1],["Bike Around",2,0,1],["Practice Driving",-2,2,-2],["Try On New Clothes",3,0,2],["Clutch Pillow",1,0,2],["Read Wikipedia",0,2,1],["Surf the Web™",3,1,-1],["Read the News",-3,3,-2],["Breathe",1,-1,3],["Yoga Practice",1,-2,3],["Reading",1,2,0],["Café Essay Writing",1,2,1],["Practice Drawing",-1,-1,1],["Gardening",1,-1,3],["Study Spanish",2,1,2],["Take a Nap",2,-1,5],["Eat Chocolate",6,-2,0],["Make Hearty Trail Mix",4,-2,3],["Exercise",1,1,2],["Go Swimming",1,0,1],]
 
 var moods = [["joyful", "Completing activities rewards <b>+1 Happiness</b>."], ["lazy", "Can only complete a maximum of <b>8 activities and assignments</b>."], ["tired", "Negative sleep debuffs occur <b>1 hour earlier</b>."], ["enraged", "Time moves <b>20% faster</b>."], ["confused", "Completing assignments gives <b>1 less Sanity</b> than normal."]]
 var currentMood = -1;
 
 var unusedActivities = [];
+var lives = 3;
 
 //const keyTasks = ["Shower", "Eat Dinner", "Sleep"];
 
 const validKeys = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
-var happiness = 80;
-var sanity = 80;
-var grades = 80;
+var happiness = 0;
+var sanity = 0;
+var grades = 0;
+var goalStats = 4;
+
 var isGameOver = false;
 var inTransition = false;
 
@@ -68,7 +71,7 @@ function gameOver(reason) {
     document.body.style.filter = "";
     document.getElementById("endscreen").style.opacity = 1;
     document.getElementById("endscreen").style.display = "";
-    document.getElementById("endscreen-text").innerHTML = `<span class="logo groovy">Game Over</span><br><span class="subtitle">` + (reason == 0 ? "You got too sad" : reason == 1 ? "You flunked out " : "You lost your marbles") + ` and <b><span class='groovy'>burned out</span></b>.<br>You survived my workload for ` + day + " days!" + (day > 6 ? " Not bad!" : "") +`</span><br><br><p id="play-game" class="button" onclick="location.reload()">Play Again</p><br><br><br><p id="how-to-play" class="button" onclick="manifesto()">Manifesto</p><br><br><br>By Brooke Gill. <a href="https://brookie.dev/" target="_blank">See what other cool stuff I've made!</a>`
+    document.getElementById("endscreen-text").innerHTML = `<span class="logo groovy">Game Over</span><br><span class="subtitle">` + (reason == 0 ? "You got too sad" : reason == 1 ? "You flunked out " : "You lost your marbles") + ` and <b><span class='groovy'>burned out</span></b>.<br>You survived my workload for ` + day + " days!" + (day > 6 ? " Not bad!" : "") +`</span><br><br><p id="play-game" class="button" onclick="location.reload()">Play Again</p><br><br><br><p id="how-to-play" class="button" onclick="manifesto()">Manifesto</p><br><br><br>By Brooke Gill. <a href="https://brookie.dev/" target="_blank">See what other cool stuff I've made!</a><br>Typeface used: Gabarito<br>Emojis used with permission from Microsoft's 3D emoji library`
 }
 
 function underSleep() {
@@ -90,12 +93,12 @@ function updateClock() {
 
 function updateStats() {
     if(!inTransition) {
-        document.getElementById("stat-happiness").innerHTML = Math.ceil(happiness);
-        document.getElementById("stat-grades").innerHTML = Math.ceil(grades);
-        document.getElementById("stat-sanity").innerHTML = Math.ceil(sanity);
-        if(happiness < 0) gameOver(0);
-        if(grades < 0) gameOver(1);
-        if(sanity < 0) gameOver(2);
+        document.getElementById("stat-happiness").innerHTML = (happiness).toFixed(1) + "<sub>/" + goalStats 
+        "</sub>";
+        document.getElementById("stat-grades").innerHTML = (grades).toFixed(1) + "<sub>/" + goalStats 
+        "</sub>";
+        document.getElementById("stat-sanity").innerHTML = (sanity).toFixed(1) + "<sub>/" + goalStats 
+        "</sub>";
     }
 }
 
@@ -121,7 +124,8 @@ function startGame() {
     passiveTime();
     underSleep();
     startDay();
-    setTimeout(hideTheEndScreen, 200)
+    setTimeout(hideTheEndScreen, 200);
+    updateStats();
 }
 
 function startDay() {
@@ -129,7 +133,13 @@ function startDay() {
     previousDayStats = [happiness, grades, sanity];
     dayCountdown = (Math.max(0, (237 - 15 * day)) + 120);
     timeSinceStart = 0;
+    happiness = 0;
+    sanity = 0;
+    grades = 0;
+    updateStats();
     todaystotal.innerHTML = "";
+    goalStats = Math.floor(4 * dayDifficulty + 0.25 * day);
+    document.getElementById("sleep-button").innerHTML = "Sleep"
     document.getElementById("endscreen").style.opacity = 0;
     setTimeout(hideTheEndScreen, 200)
     activeAssignments = [];
@@ -162,10 +172,16 @@ function endDay() {
     document.body.style.filter = "";
     document.getElementById("endscreen").style.opacity = 1;
     document.getElementById("endscreen").style.display = "";
-    document.getElementById("endscreen-text").innerHTML = `<span class="logo groovy">End of Day ` + day + `</span><br><span class="subtitle">Today's stats:<br><p class="stats"><img class="icon icon-1" src="images/sparkling_heart_color.svg"> &nbsp; <span id="eod-happiness">80</span> &nbsp; <img class="icon icon-2" src="images/open_book_color.svg"> &nbsp; <span id="eod-grades">80</span> &nbsp; <img class="icon icon-3" src="images/brain_color.svg"> &nbsp; <span id="eod-sanity">80</span></span></p><br><br><p id="play-game" class="button" onclick="nextDay()">Next Day</p><br><br><p id="diary-copy" class="diary" style="font-size: 18px;"></p>`
-    document.getElementById("eod-happiness").innerHTML = Math.floor(happiness);
-    document.getElementById("eod-grades").innerHTML = Math.floor(grades);
-    document.getElementById("eod-sanity").innerHTML = Math.floor(sanity);
+    document.getElementById("endscreen-text").innerHTML = `<span class="logo groovy">End of Day ` + day + `</span><br><span class="subtitle">Today's stats:<br><p class="stats"><img class="icon icon-1" src="images/sparkling_heart_color.svg"> &nbsp; <span id="eod-happiness">80</span><sub>/` + goalStats 
+         + `</sub> &nbsp; <img class="icon icon-2" src="images/open_book_color.svg"> &nbsp; <span id="eod-grades">80</span><sub>/` + goalStats 
+         + `</sub> &nbsp; <img class="icon icon-3" src="images/brain_color.svg"> &nbsp; <span id="eod-sanity">80</span><sub>/` + goalStats 
+         + `</sub></span></p><br><br><p id="play-game" class="button" onclick="nextDay()">Next Day</p><br><br><p id="diary-copy" class="diary" style="font-size: 18px;"></p>`
+    if(happiness < goalStats) gameOver(0);
+    if(grades < goalStats) gameOver(1);
+    if(sanity < goalStats) gameOver(2);
+    document.getElementById("eod-happiness").innerHTML = (happiness).toFixed(1);
+    document.getElementById("eod-grades").innerHTML = (grades).toFixed(1);
+    document.getElementById("eod-sanity").innerHTML = (sanity).toFixed(1);
     document.getElementById("diary-copy").innerHTML = document.getElementById("diary").innerHTML;
 }   
 
@@ -255,7 +271,7 @@ function createActivity() {
     newAssignmentId = activeAssignments.length;
     newAssignmentHappiness = activityInfo[1] + (currentMood == 0 ? 1 : 0);
     newAssignmentGrades = activityInfo[2];
-    newAssignmentSanity = activityInfo[3];
+    newAssignmentSanity = activityInfo[3] + 0.5;
 
     newAssignmentKeySequence = generateKeys(Math.floor(Math.random() / 2 + dayDifficulty + 4 + dayDifficulty * 0.75));
     activeAssignments.push([newAssignmentName, newAssignmentType, newAssignmentKeySequence, [newAssignmentHappiness, newAssignmentGrades, newAssignmentSanity]]);
@@ -286,9 +302,9 @@ function createAssignment(type) { // 0 math, 1 science, 2 english
     newAssignmentName = generateName(type);
     newAssignmentType = type;
     newAssignmentId = activeAssignments.length;
-    newAssignmentHappiness = Math.ceil(Math.random() * -3);
+    newAssignmentHappiness = Math.ceil(Math.random() * -2);
     newAssignmentSanity = Math.ceil(Math.random() * -1) - (currentMood == 4 ? 1 : 0);
-    newAssignmentGrades = Math.floor(Math.random() * 5);
+    newAssignmentGrades = Math.floor(Math.random() * 5) + 1;
     newAssignmentKeySequence = generateKeys(Math.floor(Math.random() / 2 + dayDifficulty + 4 + dayDifficulty * 0.75));
     activeAssignments.push([newAssignmentName, newAssignmentType, newAssignmentKeySequence, [newAssignmentHappiness, newAssignmentGrades, newAssignmentSanity]]);
     border.innerHTML += `<div class="assignment" onclick="selectAssignment(` + newAssignmentId + `)" id="assignment-` + newAssignmentId + `" style="background-color: hsl(` + (colors[type] + (Math.random() - 0.5) * 50) + `,` + (Math.random() * 30 + 60) + `%,` + (Math.random() * 20 + 80) + `%)">
