@@ -2,7 +2,7 @@
 <title>Burnout Simulator</title>
 <div class="container">
 <meta id="viewport" name="viewport" content="initial-scale=1, user-scalable=0, minimum-scale=1">
-<span id="endscreen"><span class="align-middle" id="endscreen-text"><span class="logo groovy">Burnout Simulator</span><br><span class="subtitle">A short game for that "What's Your Story?" project</span><br><br><p id="how-to-play" class="button" onclick="startGame()">Play</p><p id="how-to-play" class="button" onclick="howToPlay()">How to Play</p><br><br><br><p id="how-to-play" class="button" onclick="manifesto()">Manifesto</p><br><br><br>This game was intended to be played on a computer. Probably won't work on your phone.<br><br>By Brooke Gill. <a href="https://brookie.dev/" target="_blank">See what other cool stuff I've made!</a></span></span>
+<span id="endscreen"><span class="align-middle" id="endscreen-text"><span class="logo groovy">Burnout Simulator</span><br><span class="subtitle">A short game for that "What's Your Story?" project</span><br><br><p id="how-to-play" class="button" onclick="startGame()">Play</p><p id="how-to-play" class="button" onclick="howToPlay(0)">How to Play</p><br><br><br><br>This game was intended to be played on a computer. Probably won't work on your phone.<br><br>By Brooke Gill. <a href="https://brookie.dev/" target="_blank">See what other cool stuff I've made!</a></span></span>
  <p id="border" class="item" style="overflow: auto; max-height: 100vh; width: 325px;"></p>
  <div class="vertgroup">
     <p id="topbar"><span id="day">day 4</span><br><span id="clock">‒:‒‒ AM</sub></span></p>
@@ -34,6 +34,7 @@ var activityNames = [["Take out Trash",1,0,3],["Feed Rabbit",3,-1,1],["Buy Groce
 
 var moods = [["joyful", "Completing activities rewards <b>+1 Happiness</b>."], ["lazy", "Can only complete a maximum of <b>8 activities and assignments</b>."], ["tired", "Negative sleep debuffs occur <b>1 hour earlier</b>."], ["enraged", "Time moves <b>20% faster</b>."], ["confused", "Completing assignments gives <b>1 less Sanity</b> than normal."]]
 var currentMood = -1;
+var currentSlide = 0;
 
 var unusedActivities = [];
 var lives = 3;
@@ -71,7 +72,12 @@ function gameOver(reason) {
     document.body.style.filter = "";
     document.getElementById("endscreen").style.opacity = 1;
     document.getElementById("endscreen").style.display = "";
-    document.getElementById("endscreen-text").innerHTML = `<span class="logo groovy">Game Over</span><br><span class="subtitle">` + (reason == 0 ? "You got too sad" : reason == 1 ? "You flunked out " : "You lost your marbles") + ` and <b><span class='groovy'>burned out</span></b>.<br>You survived my workload for ` + day + " days!" + (day > 6 ? " Not bad!" : "") +`</span><br><br><p id="play-game" class="button" onclick="location.reload()">Play Again</p><br><br><br><p id="how-to-play" class="button" onclick="manifesto()">Manifesto</p><br><br><br>By Brooke Gill. <a href="https://brookie.dev/" target="_blank">See what other cool stuff I've made!</a><br>Typeface used: Gabarito<br>Emojis used with permission from Microsoft's 3D emoji library`
+    document.getElementById("endscreen-text").innerHTML = `<span class="logo groovy">Game Over</span><br><span class="subtitle">` + (reason == 0 ? "You got too sad" : reason == 1 ? "You flunked out " : "You lost your marbles") + ` and <b><span class='groovy'>burned out</span></b>.<br>You survived my workload for ` + day + " days!" + (day > 6 ? " Not bad!" : "") +`</span><br><br><p id="play-game" class="button" onclick="location.reload()">Play Again</p><br><br><br><br>By Brooke Gill. <a href="https://brookie.dev/" target="_blank">See what other cool stuff I've made!</a><br>Typeface used: Gabarito<br>Emojis used with permission from Microsoft's 3D emoji library`
+}
+
+function howToPlay(slide) {
+    currentSlide = slide;
+    document.getElementById("endscreen-text").innerHTML = `<img src="images/howtoplay` + slide + `.png" style="width: 50%"><br><br><p id="button-prev" class="button" onclick="howToPlay(` + ((slide - 1) % 5) + `)">Previous</p><p id="playgame" class="button" onclick="startGame()">Play</p><p id="button-next" class="button" onclick="howToPlay(` + ((slide + 1) % 5) + `)">Next</p><br><br><br><br>This game was intended to be played on a computer. Probably won't work on your phone.<br><br>By Brooke Gill. <a href="https://brookie.dev/" target="_blank">See what other cool stuff I've made!</a></span>`;
 }
 
 function underSleep() {
